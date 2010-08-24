@@ -46,11 +46,27 @@ def amazon_url
   "http://#{BUCKET}.s3.amazonaws.com/#{path}"
 end
 
+def bookmarklet
+  compile_bookmarklet(File.open('bookmarklet.js').read)
+end
+
+def compile_bookmarklet(javascript)
+  javascript.gsub(/\s+/,' ').
+             gsub(/\n/,'').
+             gsub(/;\s*[^\w]/, ';').
+             gsub(/'/, '%27').
+             gsub(/"/, '%22').
+             gsub(/^\s*/, '').
+             gsub(/\s/, '%20')
+end
+
 __END__
 
 @@ index
 
 <h1>Amazon uploader</h1>
+
+<a href="<%= bookmarklet %>">bookmarklet</a>
 
 <form method="post">
   <label>File</label>
