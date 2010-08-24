@@ -14,32 +14,45 @@ use Rack::Auth::Basic do |username, password|
   [username, password] == [ENV['UPLOADER_USERNAME'], ENV['UPLOADER_PASSWORD']]
 end
 
-BUCKET = ENV['AMAZON_S3_PATH']
+BUCKET = ENV['AMAZON_S3_BUCKET']
+BASE_PATH = BUCKET + '/' + ENV['AMAZON_S3_PATH']
 
 get '/' do
-  erb :index
+  if params['url'] =~ URI.regexp
+    upload_file
+  else
+    erb :index
+  end
 end
 
 post '/' do
+  upload_file
+end
+
+def upload_file
   if params['url'] =~ URI.regexp
     AWS::S3::S3Object.store( path,
                              open(params['url']), 
                              BUCKET,
                              :access => :public_read,
-                             :content_type => content_type )
+                             :content_type => get_content_type.to_s)
     redirect amazon_url
   else
     redirect '/'
-  end
+  end  
 end
 
-def content_type
+def get_content_type
   filename = params['url'].gsub(/\?.*$/, '')
   type = MIME::Types.type_for(filename).first
 end
 
 def path
-  BUCKET + Digest::SHA1.hexdigest(params['url']) + '.' + content_type.extensions.first
+  BASE_PATH + Digest::SHA1.hexdigest(params['url']) + '.' + extension
+end
+
+def extension
+  get_content_type.extensions.first
 end
 
 def amazon_url
