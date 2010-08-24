@@ -47,7 +47,10 @@ def amazon_url
 end
 
 def bookmarklet
-  compile_bookmarklet(File.open('bookmarklet.js').read)
+  js = File.open('bookmarklet.js').read.
+            gsub("<%= base_hostname %>", ENV['BASE_HOSTNAME'])
+  
+  compile_bookmarklet(js)
 end
 
 def compile_bookmarklet(javascript)
