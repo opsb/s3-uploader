@@ -10,25 +10,36 @@ AWS::S3::Base.establish_connection!(
   :secret_access_key => ENV['AMAZON_S3_SECRET_ACCESS_KEY']
 )
 
+BUCKET = ENV['AMAZON_S3_PATH']
+
 get '/' do
   erb :index
 end
 
 post '/' do
   if params['url'] =~ URI.regexp
-    filename = params['url'].gsub(/\?.*$/, '')
-    type = MIME::Types.type_for(filename).first
-    path = ENV['AMAZON_S3_PATH'] + Digest::SHA1.hexdigest(params['url']) + '.' + type.extensions.first
-    AWS::S3::S3Object.store(path,
-                   open(params['url']), 
-                   ENV['AMAZON_S3_BUCKET'],
-                   :access => :public_read,
-                   :content_type => type.to_s)
-    url = "http://#{ENV['AMAZON_S3_BUCKET']}.s3.amazonaws.com/" + path
-    redirect url
+    AWS::S3::S3Object.store( path,
+                             open(params['url']), 
+                             BUCKET,
+                             :access => :public_read,
+                             :content_type => content_type )
+    redirect amazon_url
   else
     redirect '/'
   end
+end
+
+def content_type
+  filename = params['url'].gsub(/\?.*$/, '')
+  type = MIME::Types.type_for(filename).first
+end
+
+def path
+  BUCKET + Digest::SHA1.hexdigest(params['url']) + '.' + content_type.extensions.first
+end
+
+def amazon_url
+  "http://#{BUCKET}.s3.amazonaws.com/#{path}"
 end
 
 __END__
