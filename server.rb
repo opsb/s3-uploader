@@ -10,6 +10,10 @@ AWS::S3::Base.establish_connection!(
   :secret_access_key => ENV['AMAZON_S3_SECRET_ACCESS_KEY']
 )
 
+use Rack::Auth::Basic do |username, password|
+  [username, password] == [ENV['UPLOADER_USERNAME'], ENV['UPLOADER_PASSWORD']]
+end
+
 BUCKET = ENV['AMAZON_S3_PATH']
 
 get '/' do
