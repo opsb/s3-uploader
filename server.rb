@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'sinatra'
+require 'session_login'
 require 'aws/s3'
 require 'digest'
 require 'mime/types'
@@ -9,28 +10,24 @@ required_config_vars = %W{BASE_HOSTNAME AMAZON_S3_ACCESS_KEY_ID AMAZON_S3_SECRET
 missing = required_config_vars.reject{ |var| ENV[var] }
 raise "The following environment vars were missing => #{missing.join(',')}" unless missing.empty?
 
+set :username, ENV['UPLOADER_USERNAME']
+set :password, ENV['UPLOADER_PASSWORD']
+
 AWS::S3::Base.establish_connection!(
   :access_key_id     => ENV['AMAZON_S3_ACCESS_KEY_ID'],
   :secret_access_key => ENV['AMAZON_S3_SECRET_ACCESS_KEY']
 )
 
-use Rack::Auth::Basic do |username, password|
-  [username, password] == [ENV['UPLOADER_USERNAME'], ENV['UPLOADER_PASSWORD']]
-end
-
 BUCKET = ENV['AMAZON_S3_BUCKET']
 BASE_PATH = ENV['AMAZON_S3_PATH']
 
 get '/' do
+  authorize!
   if params['url'] =~ URI.regexp
     upload_file
   else
     erb :index
   end
-end
-
-post '/' do
-  upload_file
 end
 
 def upload_file
@@ -42,7 +39,7 @@ def upload_file
                              :content_type => get_content_type.to_s)
     redirect amazon_url
   else
-    redirect '/'
+    redirect '/', 303
   end  
 end
 
