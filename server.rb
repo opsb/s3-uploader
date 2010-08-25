@@ -5,6 +5,10 @@ require 'digest'
 require 'mime/types'
 require 'uri'
 
+required_config_vars = %W{BASE_HOSTNAME AMAZON_S3_ACCESS_KEY_ID AMAZON_S3_SECRET_ACCESS_KEY AMAZON_S3_BUCKET AMAZON_S3_PATH UPLOADER_USERNAME UPLOADER_PASSWORD}
+missing = required_config_vars.reject{ |var| ENV[var] }
+raise "The following environment vars were missing => #{missing.join(',')}" unless missing.empty?
+
 AWS::S3::Base.establish_connection!(
   :access_key_id     => ENV['AMAZON_S3_ACCESS_KEY_ID'],
   :secret_access_key => ENV['AMAZON_S3_SECRET_ACCESS_KEY']
