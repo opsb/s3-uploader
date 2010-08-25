@@ -1,0 +1,5 @@
+sinatra -v 1.0
+aws -v 2.3.20
+mime-types -v 1.16
+
+
