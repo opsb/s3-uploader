@@ -73,6 +73,8 @@ def compile_bookmarklet(javascript)
              gsub(/;\s*[^\w]/, ';').
              gsub(/'/, '%27').
              gsub(/"/, '%22').
+             gsub(/\{/, '%7B').
+             gsub(/\}/, '%7D').
              gsub(/^\s*/, '').
              gsub(/\s/, '%20')
 end
