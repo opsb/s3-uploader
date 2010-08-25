@@ -19,7 +19,7 @@ use Rack::Auth::Basic do |username, password|
 end
 
 BUCKET = ENV['AMAZON_S3_BUCKET']
-BASE_PATH = BUCKET + '/' + ENV['AMAZON_S3_PATH']
+BASE_PATH = ENV['AMAZON_S3_PATH']
 
 get '/' do
   if params['url'] =~ URI.regexp
@@ -85,12 +85,14 @@ __END__
 @@ index
 
 <h1>Amazon uploader</h1>
+<h2>Instructions</h2>
+<ol>
+  <li>Drag <a href="<%= bookmarklet %>">grab image</a> to bookmarks bar</li>
+  <li>Visit page you want an image from</li>
+  <li>Click "grab image"</li>
+  <li>Click on the image you want</li>
+  <li>Done. The file has been added to s3 and you can use it wherever you like.</li>
+</ol>
 
-<a href="<%= bookmarklet %>">bookmarklet</a>
 
-<form method="post">
-  <label>File</label>
-  <input name="url" type="text" />
-  <input type="submit" value="Load" />
-</form>
 
