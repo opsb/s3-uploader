@@ -2,12 +2,7 @@ require 'sinatra/base'
 
 enable :inline_templates
 
-# use Rack::Session::Cookie, :key => 'rack.session',
-#                            :domain => ENV['BASE_HOSTNAME'],
-#                            :path => '/',
-#                            :expire_after => 31536000, # In seconds
-#                            :secret => 'das872387dsv'
-enable :sessions
+use Rack::Session::Cookie, :expire_after => 31536000
 
 module Sinatra
   module SessionAuth
