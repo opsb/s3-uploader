@@ -55,7 +55,7 @@ __END__
   <input type='text' name='user'>
   <br />
   <label>Password</label>
-  <input type='text' name='pass'>
+  <input type='password' name='pass'>
   <br />  
   <input type='submit' value="Login" />
   <br />
